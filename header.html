@@ -20,7 +20,34 @@
     .screen.active {
       display: flex;
     }
-    /* Torn Edge Style for Receipt */
+    /* Smooth Transitions for Drawers and Overlays */
+    .drawer {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .drawer-hidden {
+      transform: translateY(100%);
+    }
+    .drawer-visible {
+      transform: translateY(0);
+    }
+    /* Overlay Backdrop */
+    .backdrop {
+      transition: opacity 0.3s ease;
+    }
+    /* Custom Keypad styles */
+    .keypad-btn:active {
+      background-color: #e5e7eb;
+    }
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    /* Torn Edge Receipt */
     .torn-edge {
       position: relative;
       background: white;
@@ -49,16 +76,8 @@
       background-size: 10px 10px;
       background-position: 0 0;
     }
-    /* Hide scrollbar for Chrome, Safari and Opera */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    /* Hide scrollbar for IE, Edge and Firefox */
-    .no-scrollbar {
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
-    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-0 sm:p-4">
+  <!-- Mobile Device Container -->
   <div class="w-full max-w-md bg-white min-h-screen sm:min-h-[844px] sm:max-h-[844px] sm:rounded-[40px] sm:shadow-2xl overflow-hidden relative flex flex-col border border-gray-200">
