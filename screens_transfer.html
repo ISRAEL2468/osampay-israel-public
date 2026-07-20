@@ -1,111 +1,94 @@
-<!-- TRANSFER TO BANK SCREEN -->
-<div id="screen-transfer-bank" class="screen bg-gray-50 flex flex-col justify-between">
-  <div class="flex-1 overflow-y-auto no-scrollbar pb-6">
-    <!-- Header -->
-    <div class="p-4 flex items-center justify-between bg-white">
-      <button onclick="changeScreen('dashboard')" class="text-xl text-gray-700 font-bold">&larr;</button>
-      <h3 class="text-base font-bold text-gray-800">Transfer To Bank Account</h3>
-      <span onclick="changeScreen('history')" class="text-sm font-semibold text-[#00b073] cursor-pointer">History</span>
+<!-- TRANSFER SLIDING BOTTOM SHEET DRAWER -->
+<div id="drawer-transfer" class="drawer drawer-hidden fixed inset-0 bg-black bg-opacity-50 z-40 flex flex-col justify-end hidden">
+  <!-- Clickable Backdrop to close -->
+  <div class="absolute inset-0 z-0" onclick="closeTransferDrawer()"></div>
+  
+  <!-- Drawer Panel Container -->
+  <div class="bg-gray-50 rounded-t-[32px] h-[85%] max-w-md w-full mx-auto relative z-10 flex flex-col overflow-hidden shadow-2xl border-t border-gray-100">
+    
+    <!-- Drawer Grab Indicator & Header -->
+    <div class="bg-white p-4 flex items-center justify-between border-b border-gray-100">
+      <button onclick="closeTransferDrawer()" class="text-xs font-bold text-[#00b073] bg-emerald-50 px-3.5 py-1.5 rounded-full hover:bg-emerald-100 transition">✕ Close</button>
+      <h3 class="text-sm font-black text-gray-800">Transfer To Bank</h3>
+      <span onclick="switchTab('history'); closeTransferDrawer();" class="text-xs font-bold text-[#00b073] cursor-pointer hover:underline">History</span>
     </div>
-    <!-- Lavender Free Transfer Bar -->
-    <div class="bg-indigo-50 border-b border-indigo-100 p-3 flex items-center space-x-2 text-indigo-600 text-xs font-semibold">
+
+    <!-- Lavender Free Transfer Banner -->
+    <div class="bg-indigo-50 px-4 py-2.5 flex items-center space-x-2 text-indigo-600 text-[10px] font-bold border-b border-indigo-100">
       <span>⚡</span>
-      <span>Free transfers for the day: 3</span>
+      <span>Daily promotion: Enjoy 3 entirely free transfers today</span>
     </div>
-    <!-- Form Card -->
-    <div class="mx-4 mt-4 p-4 bg-white rounded-2xl shadow-sm space-y-4">
-      <div>
-        <label class="text-xs font-bold text-gray-500 block mb-1">Recipient Account</label>
-        <input id="transfer-acc-no" type="tel" placeholder="Enter Account Number" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00b073] text-sm font-semibold text-gray-800">
-      </div>
+
+    <!-- Scrollable Form Section -->
+    <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
       
-      <!-- Bank Select Row -->
-      <div onclick="openBankModal()" class="border border-gray-200 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-gray-50">
-        <div class="flex items-center space-x-3">
-          <div id="selected-bank-logo" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-sm text-gray-500">?</div>
-          <span id="selected-bank-name" class="text-sm font-bold text-gray-800">Select Bank</span>
+      <!-- Input Card -->
+      <div class="bg-white p-4 rounded-2xl shadow-sm space-y-4">
+        <div>
+          <label class="text-[10px] font-black text-gray-400 block mb-1 uppercase tracking-wider">Recipient Account</label>
+          <input id="transfer-acc-no" type="tel" maxlength="10" placeholder="Enter 10-Digit Account Number" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00b073] text-sm font-bold text-gray-800 tracking-wide bg-gray-50 focus:bg-white transition-all">
+        </div>
+        
+        <!-- Bank Selector Row -->
+        <div>
+          <label class="text-[10px] font-black text-gray-400 block mb-1 uppercase tracking-wider">Destination Bank</label>
+          <div onclick="openBankModal()" class="border border-gray-200 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 bg-gray-50 hover:border-emerald-200 transition-all">
+            <div class="flex items-center space-x-3">
+              <div id="selected-bank-logo" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-extrabold text-xs text-gray-500">?</div>
+              <span id="selected-bank-name" class="text-xs font-black text-gray-700">Select Bank</span>
+            </div>
+            <span class="text-gray-400 font-bold text-xs">&gt;</span>
+          </div>
+        </div>
+
+        <!-- Live Name Resolution green box -->
+        <div id="transfer-resolve-box" class="hidden p-3 rounded-xl border flex items-center space-x-2 text-xs font-black">
+          <!-- Will be loaded dynamically -->
+        </div>
+
+        <!-- Amount and Remark (Now inline on the same transfer drawer!) -->
+        <div id="transfer-amount-card" class="space-y-3 pt-2 border-t border-gray-50 hidden">
+          <div>
+            <label class="text-[10px] font-black text-gray-400 block mb-1 uppercase tracking-wider">Transfer Amount</label>
+            <div class="flex items-center space-x-1 border-b-2 border-gray-100 focus-within:border-[#00b073] pb-2">
+              <span class="text-xl font-black text-gray-800">₦</span>
+              <input id="transfer-amount" type="number" placeholder="100.00-5,000,000.00" oninput="checkAmountInput()" class="flex-1 text-xl font-black text-gray-800 focus:outline-none bg-transparent">
+            </div>
+            <!-- Quick select grids -->
+            <div class="grid grid-cols-4 gap-1.5 pt-2">
+              <button onclick="setQuickAmount(1000)" class="py-1.5 border border-gray-100 rounded-lg text-[10px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 transition">₦1k</button>
+              <button onclick="setQuickAmount(5000)" class="py-1.5 border border-gray-100 rounded-lg text-[10px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 transition">₦5k</button>
+              <button onclick="setQuickAmount(10000)" class="py-1.5 border border-gray-100 rounded-lg text-[10px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 transition">₦10k</button>
+              <button onclick="setQuickAmount(50000)" class="py-1.5 border border-gray-100 rounded-lg text-[10px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 transition">₦50k</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[10px] font-black text-gray-400 block mb-1 uppercase tracking-wider">Payment Remark</label>
+            <input id="transfer-remark" type="text" placeholder="Add a note (Optional)" class="w-full text-xs font-bold text-gray-700 focus:outline-none border-b border-gray-100 pb-2 bg-transparent">
+          </div>
+        </div>
+
+        <button id="transfer-confirm-btn" onclick="openReminderModal()" class="w-full py-3.5 bg-[#00b073] text-white font-extrabold rounded-full shadow hover:bg-emerald-600 transition disabled:opacity-40" disabled>Confirm Transfer</button>
+      </div>
+
+      <!-- Bank success monitor -->
+      <div class="bg-white p-3 rounded-xl shadow-sm flex items-center justify-between text-[10px] hover:bg-gray-50 cursor-pointer">
+        <div class="flex items-center space-x-2 text-gray-600">
+          <span class="text-sm">📊</span>
+          <span class="font-bold">Real-time Bank Network Health Monitor</span>
         </div>
         <span class="text-gray-400 font-bold">&gt;</span>
       </div>
 
-      <!-- Live Resolve Result Green Box -->
-      <div id="transfer-resolve-box" class="hidden p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-700 text-xs font-bold flex items-center space-x-2">
-        <span>✓</span>
-        <span id="transfer-resolved-name">ISRAEL OSAMWONYI</span>
+      <!-- Recents Section -->
+      <div class="space-y-2">
+        <h4 class="text-xs font-black text-gray-400 uppercase tracking-wider">Recent Recipients</h4>
+        <div class="grid grid-cols-1 gap-2" id="recents-list-container">
+          <!-- Populated dynamically -->
+        </div>
       </div>
 
-      <button id="transfer-next-btn" onclick="handleTransferNext()" class="w-full py-3 bg-[#00b073] text-white font-bold rounded-full shadow hover:bg-emerald-600 transition disabled:opacity-50" disabled>Next</button>
-    </div>
-
-    <!-- Success Rate monitor -->
-    <div class="mx-4 mt-4 bg-white p-3 rounded-xl shadow-sm flex items-center justify-between text-xs cursor-pointer hover:bg-gray-50">
-      <div class="flex items-center space-x-2 text-gray-700">
-        <span class="text-base">🖥️</span>
-        <span class="font-bold">Bank Transfer Success Rate Monitor</span>
-      </div>
-      <span class="text-gray-400">&gt;</span>
-    </div>
-
-    <!-- Recents and Favourites Tab -->
-    <div class="mx-4 mt-6">
-      <div class="flex border-b border-gray-200 mb-2">
-        <span class="text-sm font-bold text-[#00b073] border-b-2 border-[#00b073] pb-2 px-1 cursor-pointer">Recents</span>
-        <span class="text-sm font-bold text-gray-400 pb-2 px-4 cursor-pointer">Favourites</span>
-      </div>
-      <!-- Recents List -->
-      <div class="space-y-3" id="recents-list-container">
-        <!-- Will be dynamically populated -->
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- AMOUNT INPUT SCREEN -->
-<div id="screen-amount-input" class="screen bg-gray-50 flex flex-col justify-between">
-  <div class="flex-1 overflow-y-auto no-scrollbar pb-6">
-    <!-- Header -->
-    <div class="p-4 flex items-center justify-between bg-white border-b border-gray-100">
-      <button onclick="changeScreen('transfer-bank')" class="text-xl text-gray-700 font-bold">&larr;</button>
-      <h3 class="text-base font-bold text-gray-800">Transfer To Bank Account</h3>
-      <div class="w-5"></div>
-    </div>
-    <!-- Recipient Card -->
-    <div class="mx-4 mt-4 p-4 bg-white rounded-2xl shadow-sm flex items-center space-x-3">
-      <div id="amount-recipient-logo" class="w-10 h-10 rounded-full bg-emerald-50 text-[#00b073] flex items-center justify-center font-bold text-lg">M</div>
-      <div>
-        <h4 id="amount-recipient-name" class="text-sm font-extrabold text-gray-800">ISRAEL OSAMWONYI</h4>
-        <p id="amount-recipient-desc" class="text-xs text-gray-400">9162114195 MONIE POINT</p>
-      </div>
-    </div>
-    <!-- Amount Box -->
-    <div class="mx-4 mt-4 p-4 bg-white rounded-2xl shadow-sm space-y-3">
-      <label class="text-xs font-bold text-gray-400 block">Amount</label>
-      <div class="flex items-center space-x-1.5 border-b border-gray-200 pb-2">
-        <span class="text-2xl font-extrabold text-gray-800">₦</span>
-        <input id="transfer-amount" type="number" placeholder="100.00-5,000,000.00" oninput="checkAmountInput()" class="flex-1 text-2xl font-extrabold text-gray-800 focus:outline-none">
-      </div>
-      <!-- Quick Amount Grid -->
-      <div class="grid grid-cols-3 gap-2 pt-2">
-        <button onclick="setQuickAmount(500)" class="py-2.5 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 bg-gray-50 hover:bg-gray-100">₦500</button>
-        <button onclick="setQuickAmount(1000)" class="py-2.5 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 bg-gray-50 hover:bg-gray-100">₦1,000</button>
-        <button onclick="setQuickAmount(2000)" class="py-2.5 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 bg-gray-50 hover:bg-gray-100">₦2,000</button>
-        <button onclick="setQuickAmount(5000)" class="py-2.5 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 bg-gray-50 hover:bg-gray-100">₦5,000</button>
-        <button onclick="setQuickAmount(9999)" class="py-2.5 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 bg-gray-50 hover:bg-gray-100">₦9,999</button>
-        <button onclick="setQuickAmount(10000)" class="py-2.5 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 bg-gray-50 hover:bg-gray-100">₦10,000</button>
-      </div>
-    </div>
-    <!-- Remark Box -->
-    <div class="mx-4 mt-4 p-4 bg-white rounded-2xl shadow-sm space-y-3">
-      <label class="text-xs font-bold text-gray-400 block">Remark</label>
-      <input id="transfer-remark" type="text" placeholder="What's this for? (Optional)" class="w-full text-sm font-semibold text-gray-700 focus:outline-none border-b border-gray-100 pb-2">
-      <div class="flex space-x-2 pt-1">
-        <button onclick="setQuickRemark('Purchase')" class="px-5 py-2 border border-gray-100 rounded-full text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100">Purchase</button>
-        <button onclick="setQuickRemark('Personal')" class="px-5 py-2 border border-gray-100 rounded-full text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100">Personal</button>
-      </div>
-    </div>
-    <!-- Confirm Action Button -->
-    <div class="mx-4 mt-6">
-      <button id="transfer-confirm-btn" onclick="openReminderModal()" class="w-full py-3.5 bg-[#00b073] text-white font-bold rounded-full shadow hover:bg-emerald-600 transition disabled:opacity-40" disabled>Confirm</button>
     </div>
   </div>
 </div>
