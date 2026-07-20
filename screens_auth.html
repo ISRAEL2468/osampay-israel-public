@@ -1,0 +1,95 @@
+<!-- SPLASH SCREEN -->
+<div id="screen-splash" class="screen active bg-[#00b073] flex items-center justify-center text-white p-6 relative">
+  <div class="flex flex-col items-center justify-center flex-1">
+    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-4">
+      <svg class="w-16 h-16 text-[#00b073]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="14">
+        <circle cx="50" cy="50" r="32" stroke="#00c282" />
+        <rect x="25" y="44" width="22" height="12" fill="#1e293b" stroke="none" rx="2" />
+      </svg>
+    </div>
+    <h1 class="text-2xl font-extrabold tracking-wide text-[#1e293b] mt-4">We are Beyond Banking</h1>
+  </div>
+  <div class="absolute bottom-10 flex flex-col items-center">
+    <div class="flex items-center space-x-2 text-xs opacity-90 mb-1 text-[#1e293b] font-medium">
+      <span class="w-4 h-4 bg-transparent border border-[#1e293b] rounded-full flex items-center justify-center text-[10px] font-bold">c</span>
+      <span>Licensed by the <b class="font-bold">CBN</b> and insured by the <b class="font-bold">NDIC</b></span>
+    </div>
+  </div>
+</div>
+
+<!-- LOGGED-OUT HOME SCREEN -->
+<div id="screen-logged-out" class="screen bg-gray-50 flex flex-col justify-between">
+  <div class="flex-1 overflow-y-auto no-scrollbar pb-24">
+    <!-- Header -->
+    <div class="p-4 flex items-center justify-between bg-white">
+      <div class="flex items-center space-x-3">
+        <span class="text-xl font-bold text-gray-800">Hi</span>
+        <button onclick="changeScreen('login')" class="px-5 py-1 text-sm font-semibold border-2 border-[#00b073] text-[#00b073] rounded-full hover:bg-emerald-50 transition">Login</button>
+      </div>
+      <div class="flex items-center space-x-4 text-gray-600">
+        <span class="cursor-pointer">🎧</span>
+        <span class="cursor-pointer">🔍</span>
+        <span class="cursor-pointer">🔔</span>
+      </div>
+    </div>
+    <!-- Balance Card -->
+    <div class="mx-4 mt-2 p-4 bg-[#00b073] rounded-2xl text-white shadow-md relative">
+      <div class="flex justify-between items-center mb-1">
+        <span class="text-xs opacity-90">Available Balance 👁️</span>
+        <span class="text-xs opacity-90 cursor-pointer">Transaction History &gt;</span>
+      </div>
+      <div class="text-2xl font-bold my-1">****</div>
+      <button onclick="changeScreen('login')" class="absolute bottom-4 right-4 bg-white text-[#00b073] text-xs font-bold px-4 py-1.5 rounded-full shadow">+ Add Money</button>
+    </div>
+    <!-- Quick Actions -->
+    <div class="mx-4 mt-4 p-4 bg-white rounded-2xl grid grid-cols-3 gap-4 shadow-sm text-center">
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mb-1 text-[#00b073] text-xl">💬</div>
+        <span class="text-xs font-medium text-gray-700">To OPay</span>
+      </div>
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mb-1 text-[#00b073] text-xl">🏛️</div>
+        <span class="text-xs font-medium text-gray-700">To Bank</span>
+      </div>
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mb-1 text-[#00b073] text-xl">📤</div>
+        <span class="text-xs font-medium text-gray-700">Withdraw</span>
+      </div>
+    </div>
+    <!-- Grid Services -->
+    <div class="mx-4 mt-4 p-4 bg-white rounded-2xl shadow-sm grid grid-cols-4 gap-y-4 text-center">
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="text-xl mb-1">📱</div><span class="text-[10px] text-gray-600">Airtime</span>
+      </div>
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="text-xl mb-1">📶</div><span class="text-[10px] text-gray-600">Data</span>
+      </div>
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="text-xl mb-1">💡</div><span class="text-[10px] text-gray-600">Electricity</span>
+      </div>
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="text-xl mb-1">📺</div><span class="text-[10px] text-gray-600">TV</span>
+      </div>
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="text-xl mb-1">🔒</div><span class="text-[10px] text-gray-600">Safebox</span>
+      </div>
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="text-xl mb-1">🎁</div><span class="text-[10px] text-gray-600">Refer & Earn</span>
+      </div>
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="text-xl mb-1">📅</div><span class="text-[10px] text-gray-600">Check-In</span>
+      </div>
+      <div onclick="changeScreen('login')" class="flex flex-col items-center cursor-pointer">
+        <div class="text-xl mb-1">⚙️</div><span class="text-[10px] text-gray-600">More</span>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom Nav -->
+  <div class="bg-white border-t border-gray-100 p-2 flex justify-around text-center absolute bottom-0 left-0 right-0">
+    <div class="flex-1 text-[#00b073] font-semibold text-xs cursor-pointer"><div class="text-lg">🟢</div>Home</div>
+    <div onclick="changeScreen('login')" class="flex-1 text-gray-400 text-xs cursor-pointer"><div class="text-lg">🤍</div>Rewards</div>
+    <div onclick="changeScreen('login')" class="flex-1 text-gray-400 text-xs cursor-pointer"><div class="text-lg">📈</div>Finance</div>
+    <div onclick="changeScreen('login')" class="flex-1 text-gray-400 text-xs cursor-pointer"><div class="text-lg">💳</div>Cards</div>
+    <div onclick="changeScreen('login')" class="flex-1 text-gray-400 text-xs cursor-pointer"><div class="text-lg">👤</div>Me</div>
+  </div>
+</div>
