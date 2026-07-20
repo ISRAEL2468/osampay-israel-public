@@ -1,0 +1,91 @@
+<!-- LOGGED-IN HOME SCREEN -->
+<div id="screen-dashboard" class="screen bg-gray-50 flex flex-col justify-between">
+  <div class="flex-1 overflow-y-auto no-scrollbar pb-24">
+    <!-- Header -->
+    <div class="p-4 flex items-center justify-between bg-white">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-full border-2 border-emerald-100 overflow-hidden relative">
+          <img id="dashboard-avatar" class="w-full h-full object-cover" src="https://storage.googleapis.com/prompt2bot-chat-images/attachments/7100a058e2ba0c83df8634ea6ca011987af372cd0c4ea86ee6e52d6572cf152a.png">
+        </div>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <span class="text-xs text-gray-500">Hi,</span>
+            <span id="dashboard-username" class="text-sm font-extrabold text-gray-800">ISRAEL</span>
+          </div>
+          <span class="inline-block bg-orange-100 text-orange-600 text-[9px] font-extrabold px-2 py-0.5 rounded-full border border-orange-200">1 Upgrade to Tier 2</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4 text-gray-600">
+        <span class="cursor-pointer">🎧</span>
+        <span class="cursor-pointer">🔍</span>
+        <span onclick="changeScreen('settings')" class="cursor-pointer text-lg">⚙️</span>
+      </div>
+    </div>
+    <!-- Balance Card -->
+    <div class="mx-4 mt-2 p-4 bg-[#00b073] rounded-2xl text-white shadow-md relative">
+      <div class="flex justify-between items-center mb-1">
+        <div class="flex items-center space-x-1">
+          <span class="text-xs opacity-90">Available Balance</span>
+          <span id="balance-eye-btn" onclick="toggleBalanceEye()" class="cursor-pointer text-xs">👁️</span>
+        </div>
+        <span onclick="changeScreen('history')" class="text-[10px] opacity-90 cursor-pointer">Transaction History &gt;</span>
+      </div>
+      <div class="flex items-center space-x-1.5 my-1">
+        <span class="text-3xl font-extrabold" id="dashboard-balance">₦500,000.00</span>
+        <span class="text-lg opacity-90 cursor-pointer">&gt;</span>
+      </div>
+      
+      <!-- Recent Transactions on Homepage (Injected dynamic box) -->
+      <div id="homepage-recent-box" class="hidden mt-3 pt-3 border-t border-emerald-400 border-opacity-40">
+        <!-- Will be filled dynamically by JS if settings toggle is ON -->
+      </div>
+
+      <button onclick="changeScreen('transfer-bank')" class="absolute bottom-4 right-4 bg-white text-[#00b073] text-xs font-extrabold px-4 py-1.5 rounded-full shadow">+ Add Money</button>
+    </div>
+    <!-- Quick Actions -->
+    <div class="mx-4 mt-4 p-4 bg-white rounded-2xl grid grid-cols-3 gap-4 shadow-sm text-center">
+      <div onclick="changeScreen('transfer-bank')" class="flex flex-col items-center cursor-pointer">
+        <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mb-1 text-[#00b073] text-xl">💬</div>
+        <span class="text-xs font-medium text-gray-700">To OPay</span>
+      </div>
+      <div onclick="changeScreen('transfer-bank')" class="flex flex-col items-center cursor-pointer">
+        <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mb-1 text-[#00b073] text-xl">🏛️</div>
+        <span class="text-xs font-medium text-gray-700">To Bank</span>
+      </div>
+      <div onclick="changeScreen('transfer-bank')" class="flex flex-col items-center cursor-pointer">
+        <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mb-1 text-[#00b073] text-xl">📤</div>
+        <span class="text-xs font-medium text-gray-700">Withdraw</span>
+      </div>
+    </div>
+    <!-- Grid Services -->
+    <div class="mx-4 mt-4 p-4 bg-white rounded-2xl shadow-sm grid grid-cols-4 gap-y-4 text-center">
+      <div class="flex flex-col items-center cursor-pointer"><div class="text-xl mb-1">📱</div><span class="text-[10px] text-gray-600">Airtime</span></div>
+      <div class="flex flex-col items-center cursor-pointer"><div class="text-xl mb-1">📶</div><span class="text-[10px] text-gray-600">Data</span></div>
+      <div class="flex flex-col items-center cursor-pointer"><div class="text-xl mb-1">⚽</div><span class="text-[10px] text-gray-600">Betting</span></div>
+      <div class="flex flex-col items-center cursor-pointer"><div class="text-xl mb-1">📺</div><span class="text-[10px] text-gray-600">TV</span></div>
+      <div class="flex flex-col items-center cursor-pointer"><div class="text-xl mb-1">🐷</div><span class="text-[10px] text-gray-600">OWealth</span></div>
+      <div class="flex flex-col items-center cursor-pointer"><div class="text-xl mb-1">💸</div><span class="text-[10px] text-gray-600">Loan</span></div>
+      <div class="flex flex-col items-center cursor-pointer"><div class="text-xl mb-1">📢</div><span class="text-[10px] text-gray-600">Invitation</span></div>
+      <div class="flex flex-col items-center cursor-pointer"><div class="text-xl mb-1">⚙️</div><span class="text-[10px] text-gray-600">More</span></div>
+    </div>
+    <!-- Savings Promotion Card -->
+    <div class="mx-4 mt-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl shadow-sm border border-emerald-100 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl">💰</span>
+        <div>
+          <h4 class="text-xs font-bold text-gray-800">Effortless saving</h4>
+          <p class="text-[10px] text-gray-500">Stay disciplined & grow your wealth easily</p>
+        </div>
+      </div>
+      <button class="bg-[#00b073] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow hover:bg-emerald-600 transition">Save</button>
+    </div>
+  </div>
+  <!-- Bottom Nav -->
+  <div class="bg-white border-t border-gray-100 p-2 flex justify-around text-center absolute bottom-0 left-0 right-0">
+    <div onclick="changeScreen('dashboard')" class="flex-1 text-[#00b073] font-semibold text-xs cursor-pointer"><div class="text-lg">🟢</div>Home</div>
+    <div class="flex-1 text-gray-400 text-xs cursor-pointer"><div class="text-lg">🤍</div>Rewards</div>
+    <div class="flex-1 text-gray-400 text-xs cursor-pointer"><div class="text-lg">📈</div>Finance</div>
+    <div class="flex-1 text-gray-400 text-xs cursor-pointer"><div class="text-lg">💳</div>Cards</div>
+    <div onclick="changeScreen('history')" class="flex-1 text-gray-400 text-xs cursor-pointer relative"><div class="text-lg">👤</div>Me<span class="absolute top-1 right-8 w-2 h-2 bg-red-500 rounded-full"></span></div>
+  </div>
+</div>
