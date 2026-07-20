@@ -1,4 +1,4 @@
-// App State
+// Premium Unified App State
 let state = {
   user: null,
   registeredUsers: JSON.parse(localStorage.getItem('opay_users')) || {
@@ -7,7 +7,8 @@ let state = {
   eyeClosed: false,
   recentTransactionsOnHomepage: JSON.parse(localStorage.getItem('opay_recent_home')) || false,
   transferFlow: { bank: null, account: '', name: '', amount: 0, remark: '' },
-  currentPin: ''
+  currentPin: '',
+  currentLoginPin: ''
 };
 
 // Utilities
@@ -19,61 +20,155 @@ function formatCurrency(amount) {
   return "₦" + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Global Screen Transitions
 function changeScreen(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
   const target = document.getElementById('screen-' + screenId);
   if (target) {
+    target.classList.remove('hidden');
     target.classList.add('active');
-    if (screenId === 'dashboard') renderDashboard();
-    if (screenId === 'settings') renderSettings();
-    if (screenId === 'homepage-settings') renderHomepageSettings();
-    if (screenId === 'transfer-bank') renderTransferBank();
-    if (screenId === 'history') renderHistory();
+    
+    // Auto renders
+    if (screenId === 'dashboard') {
+      renderDashboard();
+      switchTab('home');
+    }
   }
 }
 
 // Initial Loading Transition
 window.addEventListener('DOMContentLoaded', () => {
+  // Splash Screen stays for 2.5 seconds, then reveals Lock Screen login
   setTimeout(() => {
-    changeScreen('logged-out');
-  }, 3000);
+    changeScreen('login');
+    resetLoginPin();
+  }, 2500);
 });
 
-// Auth Handlers
-const regPhoneInput = document.getElementById('reg-phone');
-if (regPhoneInput) {
-  regPhoneInput.addEventListener('input', async (e) => {
-    const val = e.target.value.trim();
-    const lookupBox = document.getElementById('reg-api-lookup');
-    const submitBtn = document.getElementById('reg-submit-btn');
-    
-    if (val.length === 10) {
-      lookupBox.className = "p-3 rounded-xl border text-xs font-semibold bg-gray-50 text-gray-500 border-gray-200";
-      lookupBox.innerHTML = "Verifying number with API...";
-      lookupBox.classList.remove('hidden');
-      
-      try {
-        const res = await fetch(`/api/resolve-account?account_number=${val}&bank_code=opay`);
-        const data = await res.json();
-        if (data.success) {
-          lookupBox.className = "p-3 rounded-xl border text-xs font-semibold bg-emerald-50 text-emerald-700 border-emerald-100";
-          lookupBox.innerHTML = `✓ Verified OPay Account: ${data.name}`;
-          state.transferFlow.resolvedRegisterName = data.name;
-          submitBtn.disabled = false;
-        } else {
-          lookupBox.className = "p-3 rounded-xl border text-xs font-semibold bg-orange-50 text-orange-700 border-orange-100";
-          lookupBox.innerHTML = `⚠️ API Key not yet configured on this number`;
-          submitBtn.disabled = true;
-        }
-      } catch (err) {
-        lookupBox.innerHTML = "Error contacting API";
+// NATIVE LOCK SCREEN PIN KEYPAD HANDLERS
+function typeLoginDigit(digit) {
+  if (state.currentLoginPin.length < 4) {
+    state.currentLoginPin += digit;
+    updateLoginPinDots();
+    if (state.currentLoginPin.length === 4) {
+      setTimeout(handlePinLogin, 250);
+    }
+  }
+}
+
+function deleteLoginDigit() {
+  if (state.currentLoginPin.length > 0) {
+    state.currentLoginPin = state.currentLoginPin.slice(0, -1);
+    updateLoginPinDots();
+  }
+}
+
+function resetLoginPin() {
+  state.currentLoginPin = '';
+  updateLoginPinDots();
+}
+
+function updateLoginPinDots() {
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById('login-dot-' + i);
+    if (dot) {
+      if (i <= state.currentLoginPin.length) {
+        dot.classList.add('bg-[#00b073]', 'border-[#00b073]', 'scale-110');
+        dot.classList.remove('border-gray-200');
+      } else {
+        dot.classList.remove('bg-[#00b073]', 'border-[#00b073]', 'scale-110');
+        dot.classList.add('border-gray-200');
       }
-    } else {
-      lookupBox.classList.add('hidden');
-      submitBtn.disabled = true;
+    }
+  }
+}
+
+function handlePinLogin() {
+  const phone = "7047945145"; // Default active profile
+  const user = state.registeredUsers[phone];
+  
+  if (user && state.currentLoginPin === user.pin) {
+    state.user = user;
+    changeScreen('dashboard');
+  } else {
+    alert("Incorrect Lock Screen PIN! (Hint: use 1234 to unlock)");
+    resetLoginPin();
+  }
+}
+
+function handleForgotPassword() {
+  alert("For security purposes, use the default PIN: 1234 to login.");
+}
+
+// UNIFIED TAB SWITCHER LOGIC
+function switchTab(tabId) {
+  // Hide all tab content
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  
+  // Show target tab
+  const targetTab = document.getElementById('tab-' + tabId);
+  if (targetTab) {
+    targetTab.classList.remove('hidden');
+  }
+
+  // Handle Tab updates
+  if (tabId === 'home') renderDashboard();
+  if (tabId === 'settings') renderSettings();
+  if (tabId === 'history') renderHistory();
+
+  // Highlight Bottom Nav
+  const tabs = ['home', 'rewards', 'finance', 'cards', 'me'];
+  tabs.forEach(t => {
+    const navEl = document.getElementById('nav-' + t);
+    if (navEl) {
+      if (t === tabId || (tabId === 'history' && t === 'home') || (tabId === 'settings' && t === 'home')) {
+        navEl.classList.add('text-[#00b073]');
+        navEl.classList.remove('text-gray-400');
+      } else {
+        navEl.classList.remove('text-[#00b073]');
+        navEl.classList.add('text-gray-400');
+      }
     }
   });
 }
+
+// Auth Handlers (Sign Up)
+setTimeout(() => {
+  const regPhoneInput = document.getElementById('reg-phone');
+  if (regPhoneInput) {
+    regPhoneInput.addEventListener('input', async (e) => {
+      const val = e.target.value.trim();
+      const lookupBox = document.getElementById('reg-api-lookup');
+      const submitBtn = document.getElementById('reg-submit-btn');
+      
+      if (val.length === 10) {
+        lookupBox.className = "p-3 rounded-xl border text-xs font-semibold bg-gray-50 text-gray-500 border-gray-200";
+        lookupBox.innerHTML = "Verifying number with API...";
+        lookupBox.classList.remove('hidden');
+        
+        try {
+          const res = await fetch(`/api/resolve-account?account_number=${val}&bank_code=opay`);
+          const data = await res.json();
+          if (data.success) {
+            lookupBox.className = "p-3 rounded-xl border text-xs font-semibold bg-emerald-50 text-emerald-700 border-emerald-100";
+            lookupBox.innerHTML = `✓ Verified OPay Account: ${data.name}`;;
+            state.transferFlow.resolvedRegisterName = data.name;
+            submitBtn.disabled = false;
+          } else {
+            lookupBox.className = "p-3 rounded-xl border text-xs font-semibold bg-orange-50 text-orange-700 border-orange-100";
+            lookupBox.innerHTML = `⚠️ No registered user with this phone number on record`;
+            submitBtn.disabled = true;
+          }
+        } catch (err) {
+          lookupBox.innerHTML = "Error contacting API";
+        }
+      } else {
+        lookupBox.classList.add('hidden');
+        submitBtn.disabled = true;
+      }
+    });
+  }
+}, 500);
 
 function handleRegisterSubmit() {
   const phone = document.getElementById('reg-phone').value.trim();
@@ -89,65 +184,39 @@ function handleRegisterSubmit() {
 
   state.registeredUsers[phone] = { phone, email, password, pin, name, balance: 500000, transactions: [] };
   saveUsers();
-  alert("Registration Successful! Please log in.");
+  
+  // Dynamic header avatar update
+  const bubble = document.querySelector('.w-9.h-9.rounded-full');
+  if (bubble) bubble.innerText = name.split(' ').map(n=>n[0]).join('');
+  
+  alert("Registration Successful! Please enter your PIN to login.");
   changeScreen('login');
-}
-
-function handleLoginSubmit() {
-  const phone = document.getElementById('login-phone').value.trim();
-  const password = document.getElementById('login-password').value.trim();
-
-  const user = state.registeredUsers[phone];
-  if (user && user.password === password) {
-    state.user = user;
-    changeScreen('dashboard');
-  } else {
-    alert("Invalid phone number or password.");
-  }
 }
 
 function logoutUser() {
   state.user = null;
-  changeScreen('logged-out');
+  changeScreen('login');
+  resetLoginPin();
 }
 
-// Render Dashboard
+// Render Dashboard (Home)
 function renderDashboard() {
   if (!state.user) return;
-  document.getElementById('dashboard-username').innerText = state.user.name.split(' ')[0];
-  updateBalanceDisplay();
   
-  const recentBox = document.getElementById('homepage-recent-box');
-  if (state.recentTransactionsOnHomepage) {
-    recentBox.classList.remove('hidden');
-    const txs = state.user.transactions || [];
-    if (txs.length === 0) {
-      recentBox.innerHTML = `<p class="text-[10px] opacity-75 text-center py-2">No transactions yet</p>`;
-    } else {
-      let html = '';
-      txs.slice(0, 2).forEach(tx => {
-        const isOut = tx.amount < 0;
-        const color = isOut ? 'text-white' : 'text-emerald-100';
-        const sign = isOut ? '-' : '+';
-        const absAmt = Math.abs(tx.amount);
-        html += `
-          <div class="flex justify-between items-center text-[10px] py-1">
-            <div>
-              <p class="font-bold">${tx.title}</p>
-              <p class="text-[8px] opacity-75">${tx.date}</p>
-            </div>
-            <div class="text-right">
-              <p class="font-extrabold ${color}">${sign}${formatCurrency(absAmt)}</p>
-              <p class="text-[8px] text-emerald-100 opacity-90">${tx.status}</p>
-            </div>
-          </div>
-        `;
-      });
-      recentBox.innerHTML = html;
-    }
-  } else {
-    recentBox.classList.add('hidden');
-  }
+  const firstName = state.user.name.split(' ')[0];
+  document.getElementById('dashboard-username').innerText = firstName;
+  document.getElementById('profile-name').innerText = state.user.name;
+  document.getElementById('profile-phone').innerText = `${state.user.phone} | Tier 3 Account`;
+  
+  // Update header initials
+  const initials = state.user.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+  const bubbles = document.querySelectorAll('.rounded-full');
+  bubbles.forEach(b => {
+    if (b.innerText === 'IO' || b.innerText === 'NEW') b.innerText = initials;
+  });
+
+  updateBalanceDisplay();
+  renderMiniHistoryOnHome();
 }
 
 function updateBalanceDisplay() {
@@ -159,97 +228,55 @@ function updateBalanceDisplay() {
   }
 }
 
-// Balance Eye
 function toggleBalanceEye() {
   state.eyeClosed = !state.eyeClosed;
   document.getElementById('balance-eye-btn').innerText = state.eyeClosed ? '🙈' : '👁️';
   updateBalanceDisplay();
 }
 
-// Settings Handlers
-function renderSettings() {
-  // settings rendering is static
+// Mini-History display toggle helper
+function renderMiniHistoryOnHome() {
+  const recentBox = document.getElementById('homepage-recent-box');
+  const recentItems = document.getElementById('homepage-recent-items');
+  
+  if (state.recentTransactionsOnHomepage && state.user) {
+    recentBox.classList.remove('hidden');
+    const txs = state.user.transactions || [];
+    if (txs.length === 0) {
+      recentItems.innerHTML = `<p class="text-[10px] opacity-75 text-center py-2 font-bold">No transactions display yet</p>`;
+    } else {
+      let html = '';
+      txs.slice(0, 3).forEach(tx => {
+        const isOut = tx.amount < 0;
+        const color = isOut ? 'text-white' : 'text-emerald-100';
+        const sign = isOut ? '-' : '+';
+        html += `
+          <div class="flex justify-between items-center text-[10px] py-1 border-b border-emerald-700 last:border-0 border-opacity-35">
+            <div>
+              <p class="font-bold">${tx.title}</p>
+              <p class="text-[8px] opacity-75 font-semibold">${tx.date}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-black ${color}">${sign}${formatCurrency(Math.abs(tx.amount))}</p>
+              <p class="text-[8px] text-emerald-100 opacity-90 font-bold">${tx.status}</p>
+            </div>
+          </div>
+        `;
+      });
+      recentItems.innerHTML = html;
+    }
+  } else {
+    recentBox.classList.add('hidden');
+  }
 }
 
-function renderHomepageSettings() {
+// Settings handlers
+function renderSettings() {
   document.getElementById('homepage-toggle').checked = state.recentTransactionsOnHomepage;
 }
 
 function toggleHomepageRecentTransactions() {
   state.recentTransactionsOnHomepage = document.getElementById('homepage-toggle').checked;
   localStorage.setItem('opay_recent_home', JSON.stringify(state.recentTransactionsOnHomepage));
-}
-
-// Bank selection
-function openBankModal() {
-  document.getElementById('modal-bank-selector').classList.remove('hidden');
-}
-
-function closeBankModal() {
-  document.getElementById('modal-bank-selector').classList.add('hidden');
-}
-
-function selectBank(code, name, initials, bg) {
-  state.transferFlow.bank = { code, name, initials, bg };
-  const logo = document.getElementById('selected-bank-logo');
-  logo.innerText = initials;
-  logo.style.backgroundColor = bg;
-  logo.style.color = '#ffffff';
-  document.getElementById('selected-bank-name').innerText = name;
-  closeBankModal();
-  checkTransferValidation();
-}
-
-function renderTransferBank() {
-  state.transferFlow = { bank: null, account: '', name: '', amount: 0, remark: '' };
-  document.getElementById('transfer-acc-no').value = '';
-  const logo = document.getElementById('selected-bank-logo');
-  logo.innerText = '?';
-  logo.style.backgroundColor = '';
-  logo.style.color = '';
-  document.getElementById('selected-bank-name').innerText = 'Select Bank';
-  document.getElementById('transfer-resolve-box').classList.add('hidden');
-  document.getElementById('transfer-next-btn').disabled = true;
-
-  const container = document.getElementById('recents-list-container');
-  const txs = state.user ? (state.user.transactions || []) : [];
-  const recents = [];
-  const seen = new Set();
-  txs.forEach(t => {
-    if (t.amount < 0 && !seen.has(t.account)) {
-      seen.add(t.account);
-      recents.push(t);
-    }
-  });
-
-  if (recents.length === 0) {
-    recents.push({ name: 'MIRACLE EDOYIN', account: '8275811964', bank: 'MONIE POINT' });
-    recents.push({ name: 'ISRAEL OSAMWONYI', account: '9162114195', bank: 'MONIE POINT' });
-  }
-
-  let html = '';
-  recents.slice(0, 5).forEach(r => {
-    html += `
-      <div onclick="clickRecent('${r.account}', '${r.bank}')" class="p-3 bg-white rounded-xl shadow-sm flex items-center justify-between cursor-pointer hover:bg-gray-50 border border-gray-100">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 rounded-full bg-emerald-50 text-[#00b073] flex items-center justify-center font-extrabold text-xs">${r.bank[0]}</div>
-          <div>
-            <h4 class="text-xs font-bold text-gray-800">${r.name}</h4>
-            <p class="text-[10px] text-gray-400">${r.account} ${r.bank}</p>
-          </div>
-        </div>
-        <span class="text-xs text-gray-400 font-bold">&gt;</span>
-      </div>
-    `;
-  });
-  container.innerHTML = html;
-}
-
-function clickRecent(acc, bankName) {
-  document.getElementById('transfer-acc-no').value = acc;
-  let code = '50515';
-  if (bankName.includes('UBA')) code = '033';
-  if (bankName.includes('OPAY')) code = '999992';
-  selectBank(code, bankName, bankName[0], bankName.includes('UBA') ? '#b91c1c' : '#00b073');
-  checkTransferValidation();
+  renderMiniHistoryOnHome();
 }
