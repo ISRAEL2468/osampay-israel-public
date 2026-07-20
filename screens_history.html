@@ -1,0 +1,38 @@
+<!-- TRANSACTION HISTORY SCREEN -->
+<div id="screen-history" class="screen bg-gray-50 flex flex-col justify-between">
+  <div class="flex-1 overflow-y-auto no-scrollbar pb-6">
+    <!-- Header -->
+    <div class="p-4 flex justify-between items-center bg-white border-b border-gray-100">
+      <button onclick="changeScreen('dashboard')" class="text-xl text-gray-700 font-bold">&larr;</button>
+      <h3 class="text-base font-bold text-gray-800">Transactions</h3>
+      <span class="text-sm font-semibold text-[#00b073] cursor-pointer">Download</span>
+    </div>
+    <!-- Filters -->
+    <div class="p-3 bg-white flex space-x-2 border-b border-gray-100">
+      <select class="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 focus:outline-none">
+        <option>All Categories</option>
+      </select>
+      <select class="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 focus:outline-none">
+        <option>All Status</option>
+      </select>
+    </div>
+    <!-- Summary Month Header -->
+    <div class="p-4 bg-white flex justify-between items-center border-b border-gray-50">
+      <div>
+        <div class="flex items-center space-x-1 font-bold text-gray-800 text-sm">
+          <span>Jul</span><span class="text-xs">▾</span>
+        </div>
+        <div class="flex items-center space-x-3 text-[10px] text-gray-400 font-bold mt-1">
+          <span>In <span id="history-total-in" class="text-emerald-500 font-extrabold">₦0.00</span></span>
+          <span>Out <span id="history-total-out" class="text-rose-500 font-extrabold">₦0.00</span></span>
+        </div>
+      </div>
+      <button class="bg-[#e6f7f1] text-[#00b073] text-xs font-bold px-4 py-1.5 rounded-full shadow-sm hover:bg-emerald-100 transition">Analysis</button>
+    </div>
+
+    <!-- History List Items Container -->
+    <div class="bg-white divide-y divide-gray-50" id="history-items-container">
+      <!-- Will be dynamically populated -->
+    </div>
+  </div>
+</div>
