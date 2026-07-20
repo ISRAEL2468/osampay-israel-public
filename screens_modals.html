@@ -1,0 +1,178 @@
+<!-- BANK SELECTOR MODAL -->
+<div id="modal-bank-selector" class="hidden fixed inset-0 z-50 bg-black bg-opacity-40 flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl h-[80%] flex flex-col overflow-hidden animate-slide-up">
+    <!-- Header -->
+    <div class="p-4 flex justify-between items-center border-b border-gray-100">
+      <h3 class="text-base font-bold text-gray-800">Select Bank</h3>
+      <button onclick="closeBankModal()" class="text-xl font-bold text-gray-400 hover:text-gray-600">&times;</button>
+    </div>
+    <!-- Search -->
+    <div class="p-3 bg-gray-50">
+      <input type="text" placeholder="Search Bank Name" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00b073] text-sm">
+    </div>
+    <!-- List -->
+    <div class="flex-1 overflow-y-auto no-scrollbar divide-y divide-gray-50">
+      <!-- Moniepoint -->
+      <div onclick="selectBank('50515', 'MONIE POINT', 'M', '#0047cc')" class="p-4 flex items-center space-x-3 cursor-pointer hover:bg-gray-50">
+        <div class="w-8 h-8 rounded-full bg-[#0047cc] flex items-center justify-center text-white font-extrabold text-sm">M</div>
+        <span class="text-sm font-bold text-gray-800">MONIE POINT</span>
+      </div>
+      <!-- UBA -->
+      <div onclick="selectBank('033', 'UBA', 'U', '#b91c1c')" class="p-4 flex items-center space-x-3 cursor-pointer hover:bg-gray-50">
+        <div class="w-8 h-8 rounded-full bg-[#b91c1c] flex items-center justify-center text-white font-extrabold text-sm">U</div>
+        <span class="text-sm font-bold text-gray-800">UBA (United Bank for Africa)</span>
+      </div>
+      <!-- OPay -->
+      <div onclick="selectBank('999992', 'OPay', 'O', '#00b073')" class="p-4 flex items-center space-x-3 cursor-pointer hover:bg-gray-50">
+        <div class="w-8 h-8 rounded-full bg-[#00b073] flex items-center justify-center text-white font-extrabold text-sm">O</div>
+        <span class="text-sm font-bold text-gray-800">OPay</span>
+      </div>
+      <!-- Access Bank -->
+      <div onclick="selectBank('044', 'Access Bank', 'A', '#4338ca')" class="p-4 flex items-center space-x-3 cursor-pointer hover:bg-gray-50">
+        <div class="w-8 h-8 rounded-full bg-[#4338ca] flex items-center justify-center text-white font-extrabold text-sm">A</div>
+        <span class="text-sm font-bold text-gray-800">Access Bank</span>
+      </div>
+      <!-- Zenith Bank -->
+      <div onclick="selectBank('057', 'Zenith Bank', 'Z', '#b91c1c')" class="p-4 flex items-center space-x-3 cursor-pointer hover:bg-gray-50">
+        <div class="w-8 h-8 rounded-full bg-[#b91c1c] flex items-center justify-center text-white font-extrabold text-sm">Z</div>
+        <span class="text-sm font-bold text-gray-800">Zenith Bank</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REMINDER BOTTOM SHEET MODAL -->
+<div id="modal-reminder" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 flex items-end justify-center p-0">
+  <div class="w-full max-w-md bg-white rounded-t-3xl p-6 space-y-4 animate-slide-up">
+    <div class="text-center">
+      <h3 class="text-lg font-bold text-gray-900">Reminder</h3>
+      <p class="text-xs text-gray-500 mt-1">Double check the transfer details before you proceed. Please note that successful transfers cannot be reversed.</p>
+    </div>
+    <!-- Details Card -->
+    <div class="bg-gray-50 rounded-2xl p-4 space-y-3">
+      <div class="flex justify-between text-xs">
+        <span class="text-gray-400 font-medium">Name</span>
+        <span id="rem-name" class="text-gray-800 font-bold">JENNIFER ISOKEN IDAHOSA</span>
+      </div>
+      <div class="flex justify-between text-xs">
+        <span class="text-gray-400 font-medium">Account No.</span>
+        <span id="rem-acc-no" class="text-gray-800 font-bold">2207814950</span>
+      </div>
+      <div class="flex justify-between text-xs">
+        <span class="text-gray-400 font-medium">Bank</span>
+        <span id="rem-bank" class="text-gray-800 font-bold">UBA</span>
+      </div>
+      <div class="flex justify-between items-center text-xs">
+        <span class="text-gray-400 font-medium">Amount</span>
+        <div class="text-right">
+          <span class="inline-block bg-emerald-100 text-[#00b073] text-[9px] font-bold px-1 py-0.5 rounded mr-1">Hundreds</span>
+          <span id="rem-amount" class="text-gray-900 font-extrabold text-sm">₦100.00</span>
+        </div>
+      </div>
+    </div>
+    <!-- Buttons -->
+    <div class="grid grid-cols-2 gap-4">
+      <button onclick="closeReminderModal()" class="w-full py-3 bg-emerald-50 text-[#00b073] font-bold rounded-full text-sm hover:bg-emerald-100 transition">Recheck</button>
+      <button onclick="confirmReminderModal()" class="w-full py-3 bg-[#00b073] text-white font-bold rounded-full text-sm hover:bg-emerald-600 transition">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT SUMMARY BOTTOM SHEET -->
+<div id="modal-payment-summary" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 flex items-end justify-center p-0">
+  <div class="w-full max-w-md bg-white rounded-t-3xl p-6 space-y-4 relative animate-slide-up">
+    <button onclick="closePaymentSummaryModal()" class="absolute top-4 left-4 text-xl font-bold text-gray-400 hover:text-gray-600">&times;</button>
+    <div class="text-center pt-2">
+      <span class="text-xs text-gray-400 font-semibold">Payment</span>
+      <h2 id="sum-amount-header" class="text-3xl font-extrabold text-gray-900 mt-1">₦100.00</h2>
+    </div>
+    <!-- Summary Details -->
+    <div class="space-y-3 text-xs pt-2">
+      <div class="flex justify-between">
+        <span class="text-gray-400 font-medium">Bank</span>
+        <span id="sum-bank" class="text-gray-800 font-bold">UBA</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-400 font-medium">Account Number</span>
+        <span id="sum-acc-no" class="text-gray-800 font-bold">2207814950</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-400 font-medium">Name</span>
+        <span id="sum-name" class="text-gray-800 font-bold">JENNIFER ISOKEN IDAHOSA</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-400 font-medium">Fee</span>
+        <span class="text-[#00b073] font-bold">₦0.00</span>
+      </div>
+    </div>
+    <!-- Payment Method Selector -->
+    <div class="border-t border-gray-100 pt-3 space-y-2">
+      <div class="flex justify-between text-xs font-bold text-gray-800 mb-2">
+        <span>Payment Method</span>
+        <span class="text-gray-400 cursor-pointer">All &gt;</span>
+      </div>
+      <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <span class="text-lg">💳</span>
+          <div>
+            <h4 id="sum-balance-label" class="text-xs font-bold text-gray-800">Available Balance (₦500,000.00)</h4>
+            <p id="sum-owealth-deduction" class="text-[10px] text-gray-500">OWealth (₦500,000.00) -₦100.00</p>
+          </div>
+        </div>
+        <span class="text-[#00b073] font-bold">✓</span>
+      </div>
+    </div>
+    <!-- Pay Button -->
+    <div class="pt-2">
+      <button onclick="openPinModal()" class="w-full py-3.5 bg-[#00b073] text-white font-bold rounded-full shadow hover:bg-emerald-600 transition">Pay</button>
+    </div>
+  </div>
+</div>
+
+<!-- ENTER PAYMENT PIN OVERLAY -->
+<div id="modal-pin-entry" class="hidden fixed inset-0 z-50 bg-black bg-opacity-60 flex flex-col justify-between">
+  <!-- Screen capture warning -->
+  <div class="bg-gray-900 bg-opacity-95 text-white p-3 px-4 flex justify-between items-center text-xs font-medium relative">
+    <div class="flex items-center space-x-2">
+      <span>⚠️</span>
+      <span>OPay detected that your screen is being captured, please remember to protect your personal information.</span>
+    </div>
+    <span onclick="closePinModal()" class="text-gray-400 hover:text-white cursor-pointer font-bold text-base ml-2">&times;</span>
+  </div>
+
+  <div class="flex-1 flex flex-col justify-end bg-white rounded-t-3xl overflow-hidden relative">
+    <button onclick="closePinModal()" class="absolute top-4 left-4 text-xl font-bold text-gray-400 hover:text-gray-600">&times;</button>
+    <div class="text-center pt-8 pb-4">
+      <h3 class="text-base font-bold text-gray-800">Enter Payment PIN</h3>
+      <!-- 4 PIN input dots -->
+      <div class="flex justify-center space-x-4 my-6">
+        <div id="pin-dot-1" class="w-12 h-12 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center text-xl font-bold text-[#00b073]"></div>
+        <div id="pin-dot-2" class="w-12 h-12 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center text-xl font-bold text-[#00b073]"></div>
+        <div id="pin-dot-3" class="w-12 h-12 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center text-xl font-bold text-[#00b073]"></div>
+        <div id="pin-dot-4" class="w-12 h-12 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center text-xl font-bold text-[#00b073]"></div>
+      </div>
+      <span class="text-xs text-[#00b073] font-semibold cursor-pointer">Forgot Payment PIN?</span>
+    </div>
+
+    <!-- Custom Numeric Keypad -->
+    <div class="bg-gray-50 border-t border-gray-100 p-4">
+      <div class="text-center text-[10px] text-gray-400 font-bold mb-3 flex items-center justify-center space-x-1">
+        <span>🛡️</span><span>OPay Secure Numeric Keypad</span>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <button onclick="typePinDigit('1')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">1</button>
+        <button onclick="typePinDigit('2')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">2</button>
+        <button onclick="typePinDigit('3')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">3</button>
+        <button onclick="typePinDigit('4')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">4</button>
+        <button onclick="typePinDigit('5')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">5</button>
+        <button onclick="typePinDigit('6')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">6</button>
+        <button onclick="typePinDigit('7')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">7</button>
+        <button onclick="typePinDigit('8')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">8</button>
+        <button onclick="typePinDigit('9')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">9</button>
+        <div class="py-3 bg-transparent"></div>
+        <button onclick="typePinDigit('0')" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm">0</button>
+        <button onclick="deletePinDigit()" class="py-3 bg-white hover:bg-gray-100 rounded-xl font-bold text-lg text-gray-800 shadow-sm flex items-center justify-center">⌫</button>
+      </div>
+    </div>
+  </div>
+</div>
