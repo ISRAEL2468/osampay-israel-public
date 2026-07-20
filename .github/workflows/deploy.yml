@@ -1,0 +1,30 @@
+name: Deploy to Deno Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: 2.x
+
+      - name: Ensure app exists
+        run: |
+          deno run -A --minimum-dependency-age=0 jsr:@deno/deploy@0.0.9903 create --app=osampay-israel --org=israelosamwonyi0125 \
+            --source local --region global --json --non-interactive < /dev/null || true
+        env:
+          DENO_DEPLOY_TOKEN: ddo_arkWNtz6gmF5bYia36Up1nmaeTWjDi8q5d4i
+
+      - name: Deploy
+        run: |
+          set -euo pipefail
+          timeout 300 deno run -A --minimum-dependency-age=0 jsr:@deno/deploy@0.0.9903 --app=osampay-israel --org=israelosamwonyi0125 \
+            --prod --non-interactive < /dev/null
+        env:
+          DENO_DEPLOY_TOKEN: ddo_arkWNtz6gmF5bYia36Up1nmaeTWjDi8q5d4i
