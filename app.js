@@ -1,9 +1,8 @@
-// Premium Unified App State
+// Live Persistent InstantDB Integration
+const INSTANTDB_APP_ID = "ef91959e-b620-4ef1-9873-ee5e4dad300f";
+
 let state = {
   user: null,
-  registeredUsers: JSON.parse(localStorage.getItem('opay_users')) || {
-    "7047945145": { phone: "7047945145", email: "israel@opay.com", name: "ISRAEL OSAMWONYI", password: "password", pin: "1234", balance: 500000, transactions: [] }
-  },
   eyeClosed: false,
   recentTransactionsOnHomepage: JSON.parse(localStorage.getItem('opay_recent_home')) || false,
   transferFlow: { bank: null, account: '', name: '', amount: 0, remark: '' },
@@ -11,13 +10,71 @@ let state = {
   currentLoginPin: ''
 };
 
-// Utilities
-function saveUsers() {
-  localStorage.setItem('opay_users', JSON.stringify(state.registeredUsers));
-}
-
+// Format utilities
 function formatCurrency(amount) {
   return "₦" + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// InstantDB DB Helpers
+async function dbQuery(entityName, whereClause = {}) {
+  try {
+    const res = await fetch('https://api.instantdb.com/runtime/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        app_id: INSTANTDB_APP_ID,
+        querys: {
+          [entityName]: {
+            $: {
+              where: whereClause
+            }
+          }
+        }
+      })
+    });
+    const data = await res.json();
+    return data[entityName] || [];
+  } catch (err) {
+    console.error(`InstantDB Query failed on ${entityName}:`, err);
+    return [];
+  }
+}
+
+async function dbTransact(steps) {
+  try {
+    const res = await fetch('https://api.instantdb.com/runtime/transact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        app_id: INSTANTDB_APP_ID,
+        steps: steps
+      })
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("InstantDB Transact failed:", err);
+    return null;
+  }
+}
+
+// Seed the default Israel Osamwonyi profile if not exists
+async function seedDefaultUser() {
+  console.log("Checking and seeding default profile...");
+  const users = await dbQuery('users', { phone: '7047945145' });
+  if (users.length === 0) {
+    console.log("Seeding default user profile into InstantDB...");
+    await dbTransact([
+      ["update", "users", "7047945145", {
+        phone: "7047945145",
+        email: "israel@opay.com",
+        name: "ISRAEL OSAMWONYI",
+        password: "password",
+        pin: "1234",
+        balance: 500000,
+        transactions: []
+      }]
+    ]);
+  }
 }
 
 // Global Screen Transitions
@@ -37,7 +94,10 @@ function changeScreen(screenId) {
 }
 
 // Initial Loading Transition
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  // Seed database
+  await seedDefaultUser();
+  
   // Splash Screen stays for 2.5 seconds, then reveals Lock Screen login
   setTimeout(() => {
     changeScreen('login');
@@ -83,9 +143,10 @@ function updateLoginPinDots() {
   }
 }
 
-function handlePinLogin() {
+async function handlePinLogin() {
   const phone = "7047945145"; // Default active profile
-  const user = state.registeredUsers[phone];
+  const users = await dbQuery('users', { phone: phone });
+  const user = users[0];
   
   if (user && state.currentLoginPin === user.pin) {
     state.user = user;
@@ -151,7 +212,7 @@ setTimeout(() => {
           const data = await res.json();
           if (data.success) {
             lookupBox.className = "p-3 rounded-xl border text-xs font-semibold bg-emerald-50 text-emerald-700 border-emerald-100";
-            lookupBox.innerHTML = `✓ Verified OPay Account: ${data.name}`;;
+            lookupBox.innerHTML = `✓ Verified OPay Account: ${data.name}`;
             state.transferFlow.resolvedRegisterName = data.name;
             submitBtn.disabled = false;
           } else {
@@ -170,7 +231,7 @@ setTimeout(() => {
   }
 }, 500);
 
-function handleRegisterSubmit() {
+async function handleRegisterSubmit() {
   const phone = document.getElementById('reg-phone').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-password').value.trim();
@@ -182,8 +243,17 @@ function handleRegisterSubmit() {
     return;
   }
 
-  state.registeredUsers[phone] = { phone, email, password, pin, name, balance: 500000, transactions: [] };
-  saveUsers();
+  await dbTransact([
+    ["update", "users", phone, {
+      phone,
+      email,
+      password,
+      pin,
+      name,
+      balance: 500000,
+      transactions: []
+    }]
+  ]);
   
   // Dynamic header avatar update
   const bubble = document.querySelector('.w-9.h-9.rounded-full');
@@ -200,9 +270,15 @@ function logoutUser() {
 }
 
 // Render Dashboard (Home)
-function renderDashboard() {
+async function renderDashboard() {
   if (!state.user) return;
   
+  // Fetch fresh user state from InstantDB to show real balance
+  const users = await dbQuery('users', { phone: state.user.phone });
+  if (users[0]) {
+    state.user = users[0];
+  }
+
   const firstName = state.user.name.split(' ')[0];
   document.getElementById('dashboard-username').innerText = firstName;
   document.getElementById('profile-name').innerText = state.user.name;
