@@ -29,12 +29,12 @@ function openBankModal() {
 }
 
 function closeBankModal() {
-  const modal = document.getElementById('modal-bank-selector');
-  modal.classList.remove('drawer-visible');
-  modal.classList.add('drawer-hidden');
-  setTimeout(() => {
-    modal.classList.add('hidden');
-  }, 300);
+  const modal = document.getElementById('drawer-visible');
+  if (modal) {
+    modal.classList.remove('drawer-visible');
+    modal.classList.add('drawer-hidden');
+  }
+  document.getElementById('modal-bank-selector').classList.add('hidden');
 }
 
 function selectBank(code, name, initials, bg) {
@@ -201,8 +201,8 @@ function updatePinDots() {
   }
 }
 
-// EXECUTE SECURE DEDUCTION & GENERATE RECEIPT
-function executeTransfer() {
+// EXECUTE SECURE DEDUCTION & SAVE TO INSTANTDB
+async function executeTransfer() {
   if (state.currentPin !== state.user.pin) {
     alert("Incorrect Security Payment PIN! Please try again.");
     state.currentPin = '';
@@ -248,8 +248,13 @@ function executeTransfer() {
   state.user.balance += 0.15;
   state.user.transactions.unshift(cashback);
 
-  state.registeredUsers[state.user.phone] = state.user;
-  saveUsers();
+  // COMMIT TO INSTANTDB! Real database writes.
+  await dbTransact([
+    ["update", "users", state.user.phone, {
+      balance: state.user.balance,
+      transactions: state.user.transactions
+    }]
+  ]);
 
   // Populate dynamic receipts elements
   document.getElementById('success-amount').innerText = amt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
